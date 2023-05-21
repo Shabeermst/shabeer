@@ -1,0 +1,79 @@
+# Product catalog
+catalog = {
+    "Product A": 20,
+    "Product B": 40,
+    "Product C": 50
+}
+
+# Discount rules
+discount_rules = {
+    "flat_10_discount": 10,
+    "bulk_5_discount": 0.05,
+    "bulk_10_discount": 0.1,
+    "tiered_50_discount": 0.5
+}
+
+# Input quantities and gift wrapping for each product
+quantities = {}
+gift_wrapping = {}
+
+for product in catalog:
+    quantity = int(input(f"Enter the quantity of {product}: "))
+    quantities[product] = quantity
+    gift_wrapping[product] = input(f"Is {product} wrapped as a gift? (yes/no): ").lower() == "yes"
+
+# Calculate subtotal
+subtotal = 0
+
+for product, quantity in quantities.items():
+    price = catalog[product]
+    subtotal += price * quantity
+
+# Apply discounts
+applied_discount = ""
+discount_amount = 0
+
+# Check "flat_10_discount"
+if subtotal > 200:
+    applied_discount = "flat_10_discount"
+    discount_amount = 10
+
+# Check "bulk_5_discount"
+for product, quantity in quantities.items():
+    if quantity > 10:
+        applied_discount = "bulk_5_discount"
+        discount_amount = catalog[product] * quantity * discount_rules["bulk_5_discount"]
+        break
+
+# Check "bulk_10_discount"
+total_quantity = sum(quantities.values())
+
+if total_quantity > 20:
+    applied_discount = "bulk_10_discount"
+    discount_amount = subtotal * discount_rules["bulk_10_discount"]
+
+# Check "tiered_50_discount"
+if total_quantity > 30:
+    for product, quantity in quantities.items():
+        if quantity > 15:
+            applied_discount = "tiered_50_discount"
+            discount_amount = (quantity - 15) * catalog[product] * discount_rules["tiered_50_discount"]
+            break
+
+# Calculate gift wrap fee and shipping fee
+gift_wrap_fee = sum([quantities[product] for product, wrapped in gift_wrapping.items() if wrapped])
+shipping_fee = 5 * ((total_quantity - 1) // 10 + 1)
+
+# Calculate total
+total = subtotal - discount_amount + gift_wrap_fee + shipping_fee
+
+# Output the details
+print("Product Details:")
+for product, quantity in quantities.items():
+    print(f"{product}: Quantity: {quantity}, Total Amount: {catalog[product] * quantity}")
+
+print(f"Subtotal: {subtotal}")
+print(f"Discount Applied: {applied_discount}, Discount Amount: {discount_amount}")
+print(f"Shipping Fee: {shipping_fee}")
+print(f"Gift Wrap Fee: {gift_wrap_fee}")
+print(f"Total: {total}")
